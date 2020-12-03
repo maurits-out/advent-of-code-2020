@@ -21,8 +21,8 @@ class TobogganTrajectory(private val map: Array<CharArray>) {
             if (map[row][column] == '#') {
                 count++
             }
-            column += right
             row += down
+            column += right
             if (column >= width) {
                 column -= width
             }
