@@ -19,7 +19,9 @@ class CustomCustoms(private val answers: String) {
     }
 
     private fun countQuestionsAnsweredByAll(group: List<String>): Int {
-        val uniqueQuestions = group.flatMap { it.toList() }.toSet()
-        return uniqueQuestions.count { question -> group.all { it.contains(question) } }
+        return group
+            .joinToString("")
+            .groupBy { it }
+            .count { it.value.size == group.size }
     }
 }
