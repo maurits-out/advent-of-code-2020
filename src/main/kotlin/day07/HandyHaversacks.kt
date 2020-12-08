@@ -1,35 +1,39 @@
 package day07
 
-class HandyHaversacks(private val rules: List<String>) {
+class HandyHaversacks(private val input: List<String>) {
 
-    private val ruleMap = parseRules()
+    private val rules = parseRules()
 
     fun part1(): Int = findContainingBags("shiny gold").size
 
+    fun part2(): Int = countRequired("shiny gold")
+
     private fun findContainingBags(bagColor: String): Set<String> {
-        val values = ruleMap.getOrDefault(bagColor, emptyList())
-        return values.fold(values.toSet(), { acc, color -> acc.union(findContainingBags(color)) })
+        val values = rules
+            .filterValues { bags -> bags.map { it.first }.contains(bagColor) }
+            .keys
+        return values.fold(values, { acc, color -> acc.union(findContainingBags(color)) })
     }
 
-    private fun parseRules(): Map<String, List<String>> {
-        return rules.flatMap { rule ->
+    private fun countRequired(bagColor: String): Int =
+        rules.getOrDefault(bagColor, emptyList())
+            .sumBy { (other, count) -> count + (count * countRequired(other)) }
+
+    private fun parseRules(): Map<String, List<Pair<String, Int>>> {
+        return input.map { rule ->
             val groupValues = Regex("(.+) bags contain (.+).").matchEntire(rule)?.groupValues
             val bag = groupValues?.get(1)!!
             val contents = parseContents(groupValues[2])
-            contents.map { it to bag }
-        }.groupBy({ (k, _) -> k }, { (_, v) -> v })
+            bag to contents
+        }.toMap()
     }
 
-    private fun parseContents(content: String): Set<String> =
+    private fun parseContents(content: String): List<Pair<String, Int>> =
         if (content == "no other bags")
-            emptySet()
+            emptyList()
         else
             content.split(", ").map {
-                val groupValues = Regex("\\d+ (.+) bags?").matchEntire(it)?.groupValues
-                groupValues?.get(1)!!
-            }.toSet()
-
-    fun part2(): Int = 0
+                val groupValues = Regex("(\\d+) (.+) bags?").matchEntire(it)?.groupValues
+                groupValues?.get(2)!! to groupValues[1].toInt()
+            }
 }
-
-

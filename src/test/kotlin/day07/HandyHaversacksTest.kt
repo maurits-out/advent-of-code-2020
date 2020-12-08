@@ -45,13 +45,13 @@ class HandyHaversacksTest {
         @Test
         fun `Matches example`() {
             val answer = HandyHaversacks(example).part2()
-            assertEquals(6, answer)
+            assertEquals(32, answer)
         }
 
         @Test
         fun `Actual answer`() {
             val answer = HandyHaversacks(readRules()).part2()
-            assertEquals(3243, answer)
+            assertEquals(1469, answer)
         }
     }
 
