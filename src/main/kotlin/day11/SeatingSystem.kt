@@ -23,10 +23,9 @@ class SeatingSystem(private val initialSeatLayout: List<String>) {
     }
 
     private tailrec fun simulateSeatingAreaPart1(occupied: Set<Pair<Int, Int>>, count: Int): Int {
-        val predicate: (Pair<Int, Int>) -> Boolean = { adjacentOccupiedSeats(occupied, it).isEmpty() }
         val newOccupied = seatCoordinates
             .minus(occupied)
-            .filterTo(HashSet(), predicate)
+            .filterTo(HashSet()) { adjacentOccupiedSeats(occupied, it).isEmpty() }
         val newEmpty = occupied
             .filterTo(HashSet(), { adjacentOccupiedSeats(occupied, it).size >= 4 })
         val next = occupied.union(newOccupied).minus(newEmpty)
