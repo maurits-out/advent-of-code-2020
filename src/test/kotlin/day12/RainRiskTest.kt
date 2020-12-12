@@ -47,7 +47,7 @@ class RainRiskTest {
         @Test
         fun `Actual answer`() {
             val answer = RainRiskPart2(readNavigationInstructions()).applyInstructions()
-            assertEquals(12, answer)
+            assertEquals(42073, answer)
         }
     }
 

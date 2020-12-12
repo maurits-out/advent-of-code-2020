@@ -4,7 +4,6 @@ import common.readInputAsLines
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import kotlin.test.Ignore
 import kotlin.test.assertEquals
 
 @DisplayName("Day 11: Seating System")
@@ -34,10 +33,9 @@ class SeatingSystemTest {
         }
 
         @Test
-        @Ignore
         fun `Actual answer`() {
             val answer = SeatingSystem(readInitialSeatLayout()).part1()
-            assertEquals(2343, answer)
+            assertEquals(2178, answer)
         }
     }
 
@@ -52,10 +50,9 @@ class SeatingSystemTest {
         }
 
         @Test
-        @Ignore
         fun `Actual answer`() {
             val answer = SeatingSystem(readInitialSeatLayout()).part2()
-            assertEquals(12, answer)
+            assertEquals(1978, answer)
         }
     }
 
