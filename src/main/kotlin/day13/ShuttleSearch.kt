@@ -14,7 +14,7 @@ package day13
  *
  * (23, -23), (41, -10), (829, 0), (13, 13), (17, 14), (29, 29), (677, 31), (37, 37), (19, 50)
  *
- * Earliest timestamp + 23 must be divisible by 829, 37, 29, 23, 13. These are all prime numbers. The sequence of
+ * Earliest timestamp + 23 must be divisible by 829, 37, 29, 23 and 13. These are all prime numbers. The sequence of
  * timestamps that satisfies this, is therefore (829 * 37 * 29 * 23 * 13) * t, with t >= 0.
  *
  * Iterate over this sequence and take the first t0 such that
@@ -23,16 +23,17 @@ package day13
  * The answer is then t0 - 23.
  */
 fun offsets() = sequence {
-    var next = 0L
+    val factor = 829L * 37 * 29 * 23 * 13
+    var next = factor * (100000000000000 / factor)
     while (true) {
         yield(next)
-        next += 829L * 37 * 29 * 23 * 13
+        next += factor
     }
 }
 
 fun main() {
     val answer = offsets()
-        .filter { ((it + 31) % 677L == 0L) && ((it - 10) % 41 == 0L) && ((it + 14) % 17 == 0L) && ((it + 50) % 19 == 0L) }
+        .filter { (it + 31) % 677 == 0L && (it - 10) % 41 == 0L && (it + 14) % 17 == 0L && (it + 50) % 19 == 0L }
         .first() - 23
     println("Part 2: $answer")
 }
