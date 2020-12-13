@@ -8,14 +8,14 @@ package day13
  *
  * The first part requires no programming, and can be done by hand (and a calculator :) ).
  *
- * Part 2 however.... I tried the following:
+ * Part 2 however.... I did the following:
  *
- * Take largest bus ID: 829, subtract its offset from all other offsets:
+ * Take bus with the highest ID. This is bus with ID 829. Next, subtract its offset (23) from all other offsets:
  *
  * (23, -23), (41, -10), (829, 0), (13, 13), (17, 14), (29, 29), (677, 31), (37, 37), (19, 50)
  *
- * Earliest timestamp + 23 must be divisible by 829, 37, 29, 23, 13. A sequence that satisfies this is
- * (829 * 37 * 29 * 23 * 13) * t, with t >= 0.
+ * Earliest timestamp + 23 must be divisible by 829, 37, 29, 23, 13. These are all prime numbers. The sequence of
+ * timestamps that satisfies this, is therefore (829 * 37 * 29 * 23 * 13) * t, with t >= 0.
  *
  * Iterate over this sequence and take the first t0 such that
  * (t0 - 10) % 41 = 0, (t0 + 14) % 17 = 0, (t0 + 31) % 677 = 0, and (t0 + 50) % 19 = 0
