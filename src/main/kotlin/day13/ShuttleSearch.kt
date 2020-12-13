@@ -14,8 +14,9 @@ package day13
  *
  * (23, -23), (41, -10), (829, 0), (13, 13), (17, 14), (29, 29), (677, 31), (37, 37), (19, 50)
  *
- * Earliest timestamp + 23 must be divisible by 829, 37, 29, 23 and 13. These are all prime numbers. The sequence of
- * timestamps that satisfies this, is therefore (829 * 37 * 29 * 23 * 13) * t, with t >= 0.
+ * Earliest timestamp + 23 must be divisible by 829, 37, 29, 23 and 13. A sequence of
+ * timestamps that satisfies this, is of the form  (829 * 37 * 29 * 23 * 13) * t, with t >= 0.
+ * (I think this is the only sequence because 829, 37, 29, 23 and 13 are pairwise co-prime, but I'm not entirely sure).
  *
  * Iterate over this sequence and take the first t0 such that
  * (t0 - 10) % 41 = 0, (t0 + 14) % 17 = 0, (t0 + 31) % 677 = 0, and (t0 + 50) % 19 = 0
