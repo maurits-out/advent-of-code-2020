@@ -23,9 +23,9 @@ package day13
  *
  * The answer is then t0 - 23.
  */
-fun offsets() = sequence {
-    val factor = 829L * 37 * 29 * 23 * 13
-    var next = factor * (100000000000000 / factor)
+fun timestamps() = sequence {
+    val factor = 265965583L // = 829 * 37 * 29 * 23 * 13
+    var next = 99999867621004L // = factor * (100000000000000 / factor)
     while (true) {
         yield(next)
         next += factor
@@ -33,7 +33,7 @@ fun offsets() = sequence {
 }
 
 fun main() {
-    val answer = offsets()
+    val answer = timestamps()
         .filter { (it + 31) % 677 == 0L && (it - 10) % 41 == 0L && (it + 14) % 17 == 0L && (it + 50) % 19 == 0L }
         .first() - 23
     println("Part 2: $answer")

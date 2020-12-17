@@ -1,6 +1,5 @@
 package day17
 
-
 abstract class ConwayCubes(private val input: String) {
 
     data class Cubic(val x: Int, val y: Int, val z: Int, val w: Int)
@@ -32,6 +31,7 @@ abstract class ConwayCubes(private val input: String) {
         val inactiveToActive = state
             .flatMap { neighbors(it) }
             .filter { countActiveNeighbors(state, it) == 3 }
+            .toSet()
         return state.minus(activeToInactive).union(inactiveToActive)
     }
 }
