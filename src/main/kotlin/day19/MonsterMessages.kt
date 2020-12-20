@@ -16,17 +16,11 @@ class MonsterMessages(rulesInput: List<String>, private val messages: List<Strin
     fun part2(): Int = messages.count { isValidMessagePart2(it) }
 
     private fun isValidMessagePart1(message: String): Boolean {
-        if (message.length % 8 != 0) {
-            return false
-        }
         val chunks = message.chunked(8)
         return chunks.size == 3 && chunks[0] in messagesOfRule42 && chunks[1] in messagesOfRule42 && chunks[2] in messagesOfRule31
     }
 
     private fun isValidMessagePart2(message: String): Boolean {
-        if (message.length % 8 != 0) {
-            return false
-        }
         val chunks = message.chunked(8)
         var index = 0
 
@@ -41,6 +35,7 @@ class MonsterMessages(rulesInput: List<String>, private val messages: List<Strin
             count31++
             index++
         }
+
         return index == chunks.size && count31 > 0 && count42 > 0 && count31 < count42
     }
 
