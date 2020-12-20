@@ -45,10 +45,10 @@ class MonsterMessages(rulesInput: List<String>, private val messages: List<Strin
     }.toMap()
 
     private fun expand(l: List<Int>, rules: Map<Int, String>): List<String> {
-        if (l.all { it in listOf(71, 72) }) {
-            return listOf(l.joinToString(separator = "") { if (it == 71) "a" else "b" })
+        if (l.all { rules.getValue(it).startsWith('"') }) {
+            return listOf(l.joinToString(separator = "") { rules.getValue(it).substring(1, 2) })
         }
-        val index = l.indexOfFirst { it !in listOf(71, 72) }
+        val index = l.indexOfFirst { !rules.getValue(it).startsWith('"') }
         return rules
             .getValue(l[index])
             .split(" | ")
