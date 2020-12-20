@@ -52,7 +52,7 @@ class OperationOrderTest {
         @Test
         fun `Actual answer`() {
             val answer = OperationOrder(readInput()).part2()
-            assertEquals(2676, answer)
+            assertEquals(70722650566361, answer)
         }
     }
 

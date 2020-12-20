@@ -58,9 +58,7 @@ class OperationOrder(private val input: List<String>) {
         }
         newTokens.add(acc.toString())
         val newExpression = newTokens.joinToString(separator = " ")
-        val result = evaluateSimplifiedPart1(newExpression)
-        println("$expression $result")
-        return result
+        return evaluateSimplifiedPart1(newExpression)
     }
 
     private fun subExpressions(expression: String): List<String> {
