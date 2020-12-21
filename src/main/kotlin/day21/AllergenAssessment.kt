@@ -6,7 +6,7 @@ class AllergenAssessment(input: List<String>) {
     data class Allergen(val name: String)
     data class Food(val ingredients: Set<Ingredient>, val allergens: Set<Allergen>)
 
-    private val regex = "(.+) \\(contains (.+)\\)".toRegex()
+    private val regex = """(.+) \(contains (.+)\)""".toRegex()
     private val foods: List<Food>
     private val mapping: Map<Allergen, Ingredient>
 
