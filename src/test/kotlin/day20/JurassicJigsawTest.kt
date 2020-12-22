@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-@DisplayName("Day 21: Allergen Assessment")
+@DisplayName("Day 20: Jurassic Jigsaw")
 class JurassicJigsawTest {
 
     @Nested
@@ -17,6 +17,17 @@ class JurassicJigsawTest {
         fun `Actual answer`() {
             val answer = JurassicJigsaw(readTiles()).part1()
             assertEquals(27798062994017, answer)
+        }
+    }
+
+    @Nested
+    @DisplayName("Part 2")
+    inner class Part2 {
+
+        @Test
+        fun `Actual answer`() {
+            val answer = JurassicJigsaw(readTiles()).part2()
+            assertEquals(2366, answer)
         }
     }
 
