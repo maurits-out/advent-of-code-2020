@@ -1,16 +1,19 @@
 package day20
 
-class JurassicJigsaw(private val input: String) {
+class JurassicJigsaw(input: String) {
 
-    fun part1(): Long =
-        input.split("\n\n").map { parseTile(it) }
+    private val allTiles = input.split("\n\n").map { parseTile(it) }
+
+    fun part1(): Long {
+        return allTiles
             .filter { tile -> matchingEdges(tile).size == 2 }
             .fold(1L) { acc, tile -> acc * tile.id }
+    }
 
     private fun matchingEdges(tile: Tile): Set<String> =
-        input.split("\n\n").map<String, Tile> { parseTile(it) }.filterNot {
-            tile.id == it.id
-        }.fold(emptySet()) { acc, other -> acc.union(matchingEdges(tile, other)) }
+        allTiles
+            .filterNot { tile.id == it.id }
+            .fold(emptySet()) { acc, other -> acc.union(matchingEdges(tile, other)) }
 
     private fun matchingEdges(tile1: Tile, tile2: Tile): Set<String> =
         tile1.edges.filter { edgeMatchesAnyEdgeFromTile(it, tile2) }.toSet()
