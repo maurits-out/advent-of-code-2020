@@ -1,16 +1,16 @@
 package day20
 
-import day20.JurassicJigsaw.EdgeType.*
+import day20.Tile.EdgeType.*
 
 typealias Image = Array<CharArray>
 
 class JurassicJigsaw(input: String) {
 
-    private val allTiles: List<Pair<Int, Image>> = input.split("\n\n").flatMap { parseTile(it) }
+    private val allTiles: List<Tile> = input.split("\n\n").flatMap { parseTile(it) }
 
     fun part1(): Long {
         val tiles = fixJigsaw()
-        return tiles[0][0].first.toLong() * tiles[0][11].first * tiles[11][0].first * tiles[11][11].first
+        return tiles[0][0].id.toLong() * tiles[0][11].id * tiles[11][0].id * tiles[11][11].id
     }
 
     fun part2(): Int {
@@ -69,30 +69,27 @@ class JurassicJigsaw(input: String) {
             }
     }
 
-    private fun fixJigsaw(): List<List<Pair<Int, Image>>> {
-        val tiles = (0 until 12).map { mutableListOf<Pair<Int, Image>>() }
-        val topLeft = allTiles.first { tile -> isTopLeft(tile.first, tile.second) }
+    private fun fixJigsaw(): List<List<Tile>> {
+        val tiles = (0 until 12).map { mutableListOf<Tile>() }
+        val topLeft = allTiles.first { tile -> isTopLeft(tile) }
         tiles[0].add(topLeft)
         for (c in 1 until 12) {
-            val prev = tiles[0][c - 1]
-            tiles[0].add(findTileNextTo(prev.first, prev.second))
+            tiles[0].add(findTileNextTo(tiles[0][c - 1]))
         }
         for (r in 1 until 12) {
-            val above = tiles[r - 1][0]
-            tiles[r].add(findTileBelow(above.first, above.second))
+            tiles[r].add(findTileBelow(tiles[r - 1][0]))
             for (c in 1 until 12) {
-                val prev = tiles[r][c - 1]
-                tiles[r].add(findTileNextTo(prev.first, prev.second))
+                tiles[r].add(findTileNextTo(tiles[r][c - 1]))
             }
         }
         return tiles
     }
 
-    private fun createOverallImage(tiles: List<List<Pair<Int, Image>>>): Image {
+    private fun createOverallImage(tiles: List<List<Tile>>): Image {
         val result = (0 until 96).map { CharArray(96) { ' ' } }.toTypedArray()
         for (r in tiles.indices) {
             for (c in tiles[r].indices) {
-                val image = removeBorder(tiles[r][c].second)
+                val image = removeBorder(tiles[r][c].image)
                 copyImageInto(image, result, 8 * r, 8 * c)
             }
         }
@@ -113,70 +110,36 @@ class JurassicJigsaw(input: String) {
         }.toTypedArray()
     }
 
-    private fun findTileNextTo(tileID: Int, image: Image): Pair<Int, Image> {
-        return allTiles.single { other ->
-            other.first != tileID && identicalEdges(edge(RIGHT, image), edge(LEFT, other.second))
-        }
-    }
+    private fun findTileNextTo(tile: Tile): Tile = allTiles.single { tile.fitsTo(it, RIGHT) }
 
-    private fun findTileBelow(tileID: Int, image: Image): Pair<Int, Image> {
-        return allTiles.single { other ->
-            other.first != tileID && identicalEdges(edge(BOTTOM, image), edge(TOP, other.second))
-        }
-    }
+    private fun findTileBelow(tile: Tile): Tile = allTiles.single { tile.fitsTo(it, BOTTOM) }
 
-    private fun isTopLeft(tileID: Int, image: Image): Boolean {
-        return allTiles.any { other ->
-            other.first != tileID && identicalEdges(edge(RIGHT, image), edge(LEFT, other.second))
-        } && allTiles.any { other ->
-            other.first != tileID && identicalEdges(edge(BOTTOM, image), edge(TOP, other.second))
-        } && allTiles.none { other ->
-            other.first != tileID && identicalEdges(edge(TOP, image), edge(BOTTOM, other.second))
-        } && allTiles.none { other ->
-            other.first != tileID && identicalEdges(edge(LEFT, image), edge(RIGHT, other.second))
-        }
-    }
+    private fun isTopLeft(tile: Tile): Boolean =
+        allTiles.any { tile.fitsTo(it, RIGHT) } && allTiles.any { tile.fitsTo(it, BOTTOM) }
+                && allTiles.none { tile.fitsTo(it, TOP) } && allTiles.none { tile.fitsTo(it, LEFT) }
 
-    private fun identicalEdges(edge1: CharArray, edge2: CharArray) = edge1.contentEquals(edge2)
-
-    private fun edge(edgeType: EdgeType, image: Image) = when (edgeType) {
-        RIGHT -> image.map { row -> row[row.size - 1] }.toCharArray()
-        LEFT -> image.map { row -> row[0] }.toCharArray()
-        TOP -> image[0]
-        BOTTOM -> image[image.size - 1]
-    }
-
-    private fun parseTile(input: String): List<Pair<Int, Image>> {
+    private fun parseTile(input: String): List<Tile> {
         val lines = input.lines()
         val id = lines.first().substring(lines[0].indexOf(' ') + 1, lines[0].indexOf(':')).toInt()
         return parseImage(id, lines.drop(1))
     }
 
-    enum class EdgeType {
-        LEFT, RIGHT, TOP, BOTTOM
-    }
-
-    private fun parseImage(id: Int, lines: List<String>): List<Pair<Int, Image>> {
+    private fun parseImage(id: Int, lines: List<String>): List<Tile> {
         val original = lines.map { it.toCharArray() }.toTypedArray()
-        return listOf(original, flip(original))
-            .flatMap { image ->
-                (0 until 4).map { times ->
-                    image to times
-                }
-            }.map { (image, times) ->
-                id to rotate(image, times)
+        return listOf(original, flip(original)).flatMap { image ->
+            (0 until 4).map { times ->
+                Tile(id, rotate(image, times))
             }
+        }
     }
 
     private fun rotate(original: Image): Image {
         val size = original.size
         val rotated = (0 until size).map { CharArray(size) { '.' } }.toTypedArray()
-        (0 until size).flatMap { r ->
-            (0 until size).map { c ->
-                r to c
+        (0 until size).map { r ->
+            (0 until size).forEach { c ->
+                rotated[c][size - 1 - r] = original[r][c]
             }
-        }.forEach { (r, c) ->
-            rotated[c][size - 1 - r] = original[r][c]
         }
         return rotated
     }
