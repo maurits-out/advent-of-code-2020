@@ -14,16 +14,17 @@ class LobbyLayout(private val input: String) {
         input.lines().map { applySteps(parse(it)) }.groupBy { it }.count { it.value.size.isOdd() }
 
     fun part2(): Int =
-        (1..100).fold(initialBlackTiles()) { black, _ -> applyRules(black) }.size
+        (1..100).fold(initialBlackTiles()) { blackTiles, _ -> applyRules(blackTiles) }.size
 
-    private fun applyRules(black: Set<Tile>): Set<Tile> = black.minus(blackToWhite(black)).union(whiteToBlack(black))
+    private fun applyRules(blackTiles: Set<Tile>): Set<Tile> =
+        blackTiles.minus(blackToWhite(blackTiles)).union(whiteToBlack(blackTiles))
 
-    private fun blackToWhite(black: Set<Tile>): Set<Tile> =
-        black.filterTo(HashSet()) { it.neighbors().intersect(black).count() !in listOf(1, 2) }
+    private fun blackToWhite(blackTiles: Set<Tile>): Set<Tile> =
+        blackTiles.filterTo(HashSet()) { it.neighbors().intersect(blackTiles).count() !in listOf(1, 2) }
 
-    private fun whiteToBlack(black: Set<Tile>): Set<Tile> =
-        black.flatMapTo(HashSet()) { it.neighbors() }
-            .filterTo(HashSet()) { it !in black && it.neighbors().intersect(black).count() == 2 }
+    private fun whiteToBlack(blackTiles: Set<Tile>): Set<Tile> =
+        blackTiles.flatMapTo(HashSet()) { it.neighbors() }
+            .filterTo(HashSet()) { it !in blackTiles && it.neighbors().intersect(blackTiles).count() == 2 }
 
     private fun initialBlackTiles(): Set<Tile> = input
         .lines()
