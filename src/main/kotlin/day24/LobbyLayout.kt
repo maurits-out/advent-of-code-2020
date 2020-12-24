@@ -44,8 +44,8 @@ class LobbyLayout(private val input: String) {
             W -> Triple(x - 1, y + 1, z)
             SE -> Triple(x, y - 1, z + 1)
             SW -> Triple(x - 1, y, z + 1)
-            NE -> Triple(x + 1, y , z - 1)
-            NW -> Triple(x, y  +1, z - 1)
+            NE -> Triple(x + 1, y, z - 1)
+            NW -> Triple(x, y + 1, z - 1)
         }
     }
 
