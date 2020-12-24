@@ -22,7 +22,7 @@ class LobbyLayout(private val input: String) {
         black.filterTo(HashSet()) { it.neighbors().intersect(black).count() !in listOf(1, 2) }
 
     private fun whiteToBlack(black: Set<Tile>): Set<Tile> =
-        black.flatMap { it.neighbors() }
+        black.flatMapTo(HashSet()) { it.neighbors() }
             .filterTo(HashSet()) { it !in black && it.neighbors().intersect(black).count() == 2 }
 
     private fun initialBlackTiles(): Set<Tile> = input
