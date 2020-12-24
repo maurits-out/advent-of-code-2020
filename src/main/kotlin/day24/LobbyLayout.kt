@@ -11,7 +11,7 @@ class LobbyLayout(private val input: String) {
     enum class Direction { E, SE, SW, W, NW, NE }
 
     fun part1(): Int =
-        input.lines().map { applySteps(parse(it)) }.groupBy { it }.count { it.value.size % 2 == 1 }
+        input.lines().map { applySteps(parse(it)) }.groupBy { it }.count { it.value.size.isOdd() }
 
     fun part2(): Int =
         (1..100).fold(initialBlackTiles()) { black, _ -> applyRules(black) }.size
@@ -29,7 +29,7 @@ class LobbyLayout(private val input: String) {
         .lines()
         .map { applySteps(parse(it)) }
         .groupBy { it }
-        .filterValues { it.size % 2 == 1 }
+        .filterValues { it.size.isOdd() }
         .keys
 
     private fun applySteps(steps: Sequence<Direction>): Tile =
@@ -48,6 +48,8 @@ class LobbyLayout(private val input: String) {
             NW -> Triple(x, y  +1, z - 1)
         }
     }
+
+    private fun Int.isOdd() = this % 2 == 1
 
     private fun parse(line: String): Sequence<Direction> =
         regex.findAll(line).map { Direction.valueOf(it.value.toUpperCase()) }
