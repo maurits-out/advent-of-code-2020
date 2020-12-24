@@ -2,7 +2,7 @@ package day24
 
 import day24.LobbyLayout.Direction.*
 
-typealias Tile = Pair<Int, Int>
+typealias Tile = Triple<Int, Int, Int>
 
 class LobbyLayout(private val input: String) {
 
@@ -33,29 +33,19 @@ class LobbyLayout(private val input: String) {
         .keys
 
     private fun applySteps(steps: Sequence<Direction>): Tile =
-        steps.fold(0 to 0) { tile, direction -> tile.neighbor(direction) }
+        steps.fold(Triple(0, 0, 0)) { tile, direction -> tile.neighbor(direction) }
 
     private fun Tile.neighbors(): Set<Tile> = Direction.values().mapTo(HashSet()) { this.neighbor(it) }
 
     private fun Tile.neighbor(direction: Direction): Tile {
-        val (x, y) = this
-        if (y % 2 == 0) {
-            return when (direction) {
-                E -> x + 1 to y
-                W -> x - 1 to y
-                SE -> x to y + 1
-                SW -> x - 1 to y + 1
-                NE -> x to y - 1
-                NW -> x - 1 to y - 1
-            }
-        }
+        val (x, y, z) = this
         return when (direction) {
-            E -> x + 1 to y
-            W -> x - 1 to y
-            SE -> x + 1 to y + 1
-            SW -> x to y + 1
-            NE -> x + 1 to y - 1
-            NW -> x to y - 1
+            E -> Triple(x + 1, y - 1, z)
+            W -> Triple(x - 1, y + 1, z)
+            SE -> Triple(x, y - 1, z + 1)
+            SW -> Triple(x - 1, y, z + 1)
+            NE -> Triple(x + 1, y , z - 1)
+            NW -> Triple(x, y  +1, z - 1)
         }
     }
 
