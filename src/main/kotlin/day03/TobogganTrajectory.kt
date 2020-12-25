@@ -7,26 +7,22 @@ class TobogganTrajectory(private val map: Array<CharArray>) {
 
     fun part1(): Int = countTrees(3, 1)
 
-    fun part2(): Long {
-        return listOf(Pair(1, 1), Pair(3, 1), Pair(5, 1), Pair(7, 1), Pair(1, 2))
-            .map { (right, down) -> countTrees(right, down) }
-            .fold(1, { acc, count -> acc * count })
-    }
+    fun part2(): Long = listOf(1 to 1, 3 to 1, 5 to 1, 7 to 1, 1 to 2)
+        .map { (right, down) -> countTrees(right, down) }
+        .fold(1) { acc, count -> acc * count }
 
     private fun countTrees(right: Int, down: Int): Int {
-        var row = 0
-        var column = 0
-        var count = 0
-        while (row < height) {
-            if (map[row][column] == '#') {
-                count++
+
+        tailrec fun countTrees(row: Int, column: Int, count: Int): Int {
+            if (row >= height) {
+                return count
             }
-            row += down
-            column += right
-            if (column >= width) {
-                column -= width
-            }
+            val delta = if (map[row][column] == '#') 1 else 0
+            val nextColumn = column + right
+            val correction = if (nextColumn >= width) width else 0
+            return countTrees(row + down, nextColumn - correction, count + delta)
         }
-        return count
+
+        return countTrees(0, 0, 0)
     }
 }
