@@ -26,12 +26,10 @@ abstract class ConwayCubes(private val input: String) {
 
     private fun nextState(state: Set<Cubic>): Set<Cubic> {
         val activeToInactive = state
-            .filter { countActiveNeighbors(state, it) !in 2..3 }
-            .toSet()
+            .filterTo(HashSet()) { countActiveNeighbors(state, it) !in 2..3 }
         val inactiveToActive = state
             .flatMap { neighbors(it) }
-            .filter { countActiveNeighbors(state, it) == 3 }
-            .toSet()
+            .filterTo(HashSet()) { countActiveNeighbors(state, it) == 3 }
         return state.minus(activeToInactive).union(inactiveToActive)
     }
 }
@@ -46,7 +44,7 @@ class Part1(input: String) : ConwayCubes(input) {
                     Cubic(x, y, z, 0)
                 }
             }
-        }.filter { it != cubic }.toSet()
+        }.filterTo(HashSet()) { it != cubic }
     }
 }
 
@@ -62,6 +60,6 @@ class Part2(input: String): ConwayCubes(input) {
                     }
                 }
             }
-        }.filter { it != cubic }.toSet()
+        }.filterTo(HashSet()) { it != cubic }
     }
 }

@@ -5,8 +5,7 @@ class CustomCustoms(private val answers: String) {
     fun part1(): Int {
         return answers
             .split("\n\n")
-            .map { it.replace("\n", "") }
-            .map { it.toSet().size }
+            .map { it.replace("\n", "").toSet().size }
             .sum()
     }
 

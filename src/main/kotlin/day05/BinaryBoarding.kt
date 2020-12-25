@@ -2,7 +2,7 @@ package day05
 
 class BinaryBoarding(private val boardingPasses: List<String>) {
 
-    fun part1(): Int = boardingPasses.maxOf { seatID(it) }
+    fun part1() = boardingPasses.maxOf { seatID(it) }
 
     fun part2(): Int {
         val taken = boardingPasses.map { seatID(it) }.toSet()
@@ -16,7 +16,7 @@ class BinaryBoarding(private val boardingPasses: List<String>) {
         return row * 8 + column
     }
 
-    private fun location(instructions: String, lowerChar: Char, initial: Pair<Int, Int>): Int =
+    private fun location(instructions: String, lowerChar: Char, initial: Pair<Int, Int>) =
         instructions.fold(initial, { (first, last), char ->
             val half = (last - first + 1) / 2
             when (char) {

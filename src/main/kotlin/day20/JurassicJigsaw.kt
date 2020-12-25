@@ -58,16 +58,13 @@ class JurassicJigsaw(input: String) {
         }
     }
 
-    private fun rotateAndFlipOverallImage(overallImage: Image): List<Image> {
-        return listOf(overallImage, flip(overallImage))
+    private fun rotateAndFlipOverallImage(overallImage: Image): List<Image> =
+        listOf(overallImage, flip(overallImage))
             .flatMap { image ->
                 (0 until 4).map { times ->
-                    image to times
+                    rotate(image, times)
                 }
-            }.map { (image, times) ->
-                rotate(image, times)
             }
-    }
 
     private fun fixJigsaw(): List<List<Tile>> {
         val tiles = (0 until 12).map { mutableListOf<Tile>() }
