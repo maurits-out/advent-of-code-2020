@@ -1,7 +1,11 @@
 package day07
 
+typealias BagColorCount = Pair<String, Int>
+
 class HandyHaversacks(private val input: List<String>) {
 
+    private val ruleRegex = Regex("(.+) bags contain (.+).")
+    private val contentRegex = Regex("(\\d+) (.+) bags?")
     private val rules = parseRules()
 
     fun part1(): Int = findContainingBags("shiny gold").size
@@ -12,28 +16,27 @@ class HandyHaversacks(private val input: List<String>) {
         val values = rules
             .filterValues { bags -> bags.map { it.first }.contains(bagColor) }
             .keys
-        return values.fold(values, { acc, color -> acc.union(findContainingBags(color)) })
+        return values.fold(values) { acc, color -> acc.union(findContainingBags(color)) }
     }
 
     private fun countRequired(bagColor: String): Int =
         rules.getOrDefault(bagColor, emptyList())
             .sumBy { (other, count) -> count + (count * countRequired(other)) }
 
-    private fun parseRules(): Map<String, List<Pair<String, Int>>> {
+    private fun parseRules(): Map<String, List<BagColorCount>> {
         return input.map { rule ->
-            val groupValues = Regex("(.+) bags contain (.+).").matchEntire(rule)?.groupValues
-            val bag = groupValues?.get(1)!!
-            val contents = parseContents(groupValues[2])
-            bag to contents
+            val (bag, contents) = ruleRegex.matchEntire(rule)!!.destructured
+            bag to parseContents(contents)
         }.toMap()
     }
 
-    private fun parseContents(content: String): List<Pair<String, Int>> =
-        if (content == "no other bags")
+    private fun parseContents(content: String) =
+        if (content == "no other bags") {
             emptyList()
-        else
+        } else {
             content.split(", ").map {
-                val groupValues = Regex("(\\d+) (.+) bags?").matchEntire(it)?.groupValues
-                groupValues?.get(2)!! to groupValues[1].toInt()
+                val (count, color) = contentRegex.matchEntire(it)!!.destructured
+                color to count.toInt()
             }
+        }
 }
