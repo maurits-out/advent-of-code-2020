@@ -1,14 +1,16 @@
 package day08
 
-import java.lang.IllegalStateException
+typealias Instruction = Pair<String, Int>
 
 class HandheldHalting(private val program: String) {
+
+    class InfiniteLoopException(val acc: Int) : Exception()
 
     private val instructions = parseProgram()
 
     fun part1(): Int {
         try {
-            executeProgram(0, 0, emptySet())
+            executeProgram(0, 0, HashSet())
         } catch (e: InfiniteLoopException) {
             return e.acc
         }
@@ -20,12 +22,12 @@ class HandheldHalting(private val program: String) {
         for (pc in indices) {
             swap(pc)
             try {
-                return executeProgram(0, 0, emptySet())
+                return executeProgram(0, 0, HashSet())
             } catch (e: InfiniteLoopException) {
                 swap(pc)
             }
         }
-        throw IllegalStateException()
+        error("no value returned when swapping any jmp / nop")
     }
 
     private fun swap(pc: Int) {
@@ -37,28 +39,28 @@ class HandheldHalting(private val program: String) {
         }
     }
 
-    private tailrec fun executeProgram(pc: Int, acc: Int, executed: Set<Int>): Int {
+    private tailrec fun executeProgram(pc: Int, acc: Int, executed: MutableSet<Int>): Int {
         if (pc == instructions.size) {
             return acc
         }
         if (pc in executed) {
             throw InfiniteLoopException(acc)
         }
+        executed.add(pc)
         val (instruction, value) = instructions[pc]
         return when (instruction) {
-            "acc" -> executeProgram(pc + 1, acc + value, executed.union(setOf(pc)))
-            "jmp" -> executeProgram(pc + value, acc, executed.union(setOf(pc)))
-            else -> executeProgram(pc + 1, acc, executed.union(setOf(pc)))
+            "acc" -> executeProgram(pc + 1, acc + value, executed)
+            "jmp" -> executeProgram(pc + value, acc, executed)
+            "nop" -> executeProgram(pc + 1, acc, executed)
+            else -> error("$instruction not recognized")
         }
     }
 
-    private fun parseProgram(): Array<Pair<String, Int>> =
+    private fun parseProgram(): Array<Instruction> =
         program.lines().map { parseLine(it) }.toTypedArray()
 
-    private fun parseLine(line: String): Pair<String, Int> {
+    private fun parseLine(line: String): Instruction {
         val parts = line.split(' ')
         return parts[0] to parts[1].toInt()
     }
 }
-
-class InfiniteLoopException(val acc: Int) : Exception()
