@@ -34,7 +34,6 @@ fun timestamps() = sequence {
 
 fun main() {
     val answer = timestamps()
-        .filter { (it + 31) % 677 == 0L && (it - 10) % 41 == 0L && (it + 14) % 17 == 0L && (it + 50) % 19 == 0L }
-        .first() - 23
+        .first { (it + 31) % 677 == 0L && (it - 10) % 41 == 0L && (it + 14) % 17 == 0L && (it + 50) % 19 == 0L } - 23
     println("Part 2: $answer")
 }

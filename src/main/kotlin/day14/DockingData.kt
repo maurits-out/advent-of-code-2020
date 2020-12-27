@@ -1,88 +1,67 @@
 package day14
 
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
+
 class DockingData(private val program: List<String>) {
 
-    private val assignmentRegex = Regex("mem\\[(\\d+)] = (\\d+)")
+    private val assignmentRegex = Regex("""mem\[(\d+)] = (\d+)""")
 
-    data class State(val memory: Map<Long, Long> = hashMapOf(), val mask: String? = null)
+    data class State(val memory: MutableMap<Long, Long> = HashMap(), val mask: String? = null)
 
-    fun part1(): Long {
-        val endState = program.fold(State()) { state, instruction -> applyPart1(state, instruction) }
-        return endState.memory.values.sum()
-    }
+    fun part1() = program.fold(State()) { state, instruction -> applyPart1(state, instruction) }.memory.values.sum()
 
-    fun part2(): Long {
-        val endState = program.fold(State()) { state, instruction -> applyPart2(state, instruction) }
-        return endState.memory.values.sum()
-    }
+    fun part2() = program.fold(State()) { state, instruction -> applyPart2(state, instruction) }.memory.values.sum()
 
     private fun applyPart1(state: State, instruction: String): State {
         if (instruction.startsWith("mask = ")) {
             return state.copy(mask = instruction.takeLast(36))
         }
-        return assignmentRegex.matchEntire(instruction)
-            ?.destructured
-            ?.let { (address, value) ->
-                val maskedValue = applyMaskToValue(value.toLong(), state.mask!!)
-                state.copy(memory = updateMemory(address.toLong(), maskedValue, state.memory))
-            }!!
+        val (address, value) = assignmentRegex.matchEntire(instruction)!!.destructured
+        val maskedValue = applyMaskToValue(value.toLong(), state.mask!!)
+        state.memory[address.toLong()] = maskedValue
+        return state
     }
 
-    private fun applyMaskToValue(value: Long, mask: String): Long {
-        return convertToBinaryString(value)
+    private fun applyMaskToValue(value: Long, mask: String): Long =
+        convertToBinaryString(value)
             .zip(mask)
-            .map { (v, m) -> if (m == 'X') v else m }
-            .joinToString("")
+            .joinToString("") { (v, m) -> (if (m == 'X') v else m).toString() }
             .toLong(2)
-    }
 
     private fun applyPart2(state: State, instruction: String): State {
         if (instruction.startsWith("mask = ")) {
             return state.copy(mask = instruction.takeLast(36))
         }
-        return assignmentRegex.matchEntire(instruction)
-            ?.destructured
-            ?.let { (address, value) ->
-                val addresses = applyMaskToAddress(address.toLong(), state.mask!!)
-                state.copy(memory = updateMemory(addresses, value.toLong(), state.memory))
-            }!!
-    }
-
-    private fun updateMemory(address: Long, value: Long, memory: Map<Long, Long>): Map<Long, Long> {
-        val mutableMemory = memory.toMutableMap()
-        mutableMemory[address] = value
-        return mutableMemory.toMap()
-    }
-
-    private fun updateMemory(addresses: Set<Long>, value: Long, memory: Map<Long, Long>): Map<Long, Long> {
-        val mutableMemory = memory.toMutableMap()
-        addresses.forEach {
-            mutableMemory[it] = value
+        val (address, value) = assignmentRegex.matchEntire(instruction)!!.destructured
+        applyMaskToAddress(address.toLong(), state.mask!!).forEach {
+            state.memory[it] = value.toLong()
         }
-        return mutableMemory.toMap()
+        return state
     }
 
     private fun applyMaskToAddress(address: Long, mask: String): Set<Long> {
-        val template = convertToBinaryString(address).zip(mask).map { (v, m) ->
-            when (m) {
-                '0' -> v
-                '1' -> '1'
-                else -> 'X'
-            }
-        }.joinToString("")
+        val template = convertToBinaryString(address)
+            .zip(mask)
+            .joinToString("") { (v, m) -> (if (m == '0') v else m).toString() }
         return expand(template)
     }
 
-    private fun expand(template: String): Set<Long> =
-        when (template.contains('X')) {
-            false ->
-                setOf(template.toLong(2))
-            else -> {
-                val withZero = expand(template.replaceFirst('X', '0'))
-                val withOne = expand(template.replaceFirst('X', '1'))
-                withZero.union(withOne)
+    private fun expand(template: String): Set<Long> {
+        val result = HashSet<Long>()
+        val templates = LinkedList(listOf(template))
+        while (templates.isNotEmpty()) {
+            val t = templates.poll()!!
+            if (t.contains('X')) {
+                templates.push(t.replaceFirst('X', '0'))
+                templates.push(t.replaceFirst('X', '1'))
+            } else {
+                result.add(t.toLong(2))
             }
         }
+        return result
+    }
 
     private fun convertToBinaryString(value: Long) =
         String.format("%36s", value.toString(2)).replace(' ', '0')

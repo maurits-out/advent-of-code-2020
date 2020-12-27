@@ -3,6 +3,8 @@ package day11
 import kotlin.math.abs
 import kotlin.math.sign
 
+typealias Seat = Pair<Int,Int>
+
 class SeatingSystem(private val initialSeatLayout: List<String>) {
 
     private val seatCoordinates = extractSeatCoordinates()
@@ -11,7 +13,7 @@ class SeatingSystem(private val initialSeatLayout: List<String>) {
 
     fun part2(): Int = simulateSeatingAreaPart2(emptySet(), 0)
 
-    private fun extractSeatCoordinates(): Set<Pair<Int, Int>> {
+    private fun extractSeatCoordinates(): Set<Seat> {
         return initialSeatLayout
             .withIndex()
             .flatMap { row ->
@@ -22,7 +24,7 @@ class SeatingSystem(private val initialSeatLayout: List<String>) {
             }.toSet()
     }
 
-    private tailrec fun simulateSeatingAreaPart1(occupied: Set<Pair<Int, Int>>, count: Int): Int {
+    private tailrec fun simulateSeatingAreaPart1(occupied: Set<Seat>, count: Int): Int {
         val newOccupied = seatCoordinates
             .minus(occupied)
             .filterTo(HashSet()) { adjacentOccupiedSeats(occupied, it).isEmpty() }
@@ -36,7 +38,7 @@ class SeatingSystem(private val initialSeatLayout: List<String>) {
         return simulateSeatingAreaPart1(next, count + 1)
     }
 
-    private tailrec fun simulateSeatingAreaPart2(occupied: Set<Pair<Int, Int>>, count: Int): Int {
+    private tailrec fun simulateSeatingAreaPart2(occupied: Set<Seat>, count: Int): Int {
         val newOccupied = seatCoordinates
             .minus(occupied)
             .filterTo(HashSet()) { occupiedAndVisibleSeatsInAnyDirection(occupied, it).isEmpty() }
@@ -50,7 +52,7 @@ class SeatingSystem(private val initialSeatLayout: List<String>) {
         return simulateSeatingAreaPart2(next, count + 1)
     }
 
-    private fun adjacentOccupiedSeats(occupied: Set<Pair<Int, Int>>, seat: Pair<Int, Int>): Set<Pair<Int, Int>> {
+    private fun adjacentOccupiedSeats(occupied: Set<Seat>, seat: Seat): Set<Seat> {
         val (row, column) = seat
         return setOf(
             row - 1 to column - 1,
@@ -64,16 +66,16 @@ class SeatingSystem(private val initialSeatLayout: List<String>) {
         ).intersect(occupied)
     }
 
-    private fun occupiedAndVisibleSeatsInAnyDirection(occupied: Set<Pair<Int, Int>>, seat: Pair<Int, Int>): Set<Pair<Int, Int>> {
+    private fun occupiedAndVisibleSeatsInAnyDirection(occupied: Set<Seat>, seat: Seat): Set<Seat> {
         val (row, column) = seat
-        return occupied.filter { (r, c) ->
+        return occupied.filterTo(HashSet()) { (r, c) ->
             (row == r && column != c) ||
                     (row != r && column == c) ||
                     (abs(row - r) == abs(column - c) && row != r)
         }.filterTo(HashSet()) { isVisible(it, seat) }
     }
 
-    private tailrec fun isVisible(from: Pair<Int, Int>, to: Pair<Int, Int>): Boolean {
+    private tailrec fun isVisible(from: Seat, to: Seat): Boolean {
         val nextSeat = move(from, to)
         if (nextSeat == to) {
             return true
@@ -84,7 +86,7 @@ class SeatingSystem(private val initialSeatLayout: List<String>) {
         return isVisible(nextSeat, to)
     }
 
-    private fun move(from: Pair<Int, Int>, to: Pair<Int, Int>): Pair<Int, Int> {
+    private fun move(from: Seat, to: Seat): Seat {
         val (r1, c1) = from
         val (r2, c2) = to
         return r1 + delta(r1, r2) to c1 + delta(c1, c2)

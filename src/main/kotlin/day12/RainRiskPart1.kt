@@ -38,12 +38,12 @@ class RainRiskPart1(private val navigationInstructions: List<String>) {
             return State(newLocation, direction)
         }
 
-        private fun turn(t: Char, value: Int): State {
-            return when (t) {
-                'R' -> State(location, direction.turnRight(value / 90))
-                else -> State(location, direction.turnRight(4 - (value / 90)))
+        private fun turn(t: Char, value: Int): State =
+            if (t == 'R') {
+                State(location, direction.turnRight(value / 90))
+            } else {
+                State(location, direction.turnRight(4 - (value / 90)))
             }
-        }
 
         private fun forward(value: Int): State {
             val (north, east) = location
